@@ -39,7 +39,7 @@ public class PlayerCtr : MonoBehaviour
     public float fallMultiplier;
     [Header("提前松开下落系数")]
     public float lowJumpMultiplier;
-    private bool isJumping = false;
+    protected bool isJumping = false;
 
     [Header("触地判定")]
     public Vector3 pointOffset;
@@ -48,7 +48,7 @@ public class PlayerCtr : MonoBehaviour
     /// <summary>
     /// 角色是否在地上
     /// </summary>
-    private bool isOnGround;
+    protected bool isOnGround;
     #endregion
 
     #region 冲刺
@@ -171,12 +171,11 @@ public class PlayerCtr : MonoBehaviour
         takeOffset = takePointOffset;
     }
 
-    private void Update()
+    protected virtual void Update()
     {
         aim.transform.rotation = Quaternion.Euler(0, 0, AimAngle * transform.localScale.x);
         Throw();
         Take();
-
     }
 
     protected virtual void FixedUpdate()
@@ -198,13 +197,13 @@ public class PlayerCtr : MonoBehaviour
         {
             if (playerType == PlayerType.Player1)
             {
-                if (Input.GetAxisRaw("Horizontal_Player1") > inputOffset.x)
+                if (Input.GetAxisRaw("Horizontal_Player1") > inputOffset.x && isOnGround)
                 {
                     if (rg.velocity.x < moveSpeed * Time.fixedDeltaTime * 60)
                         rg.velocity = new Vector3(Mathf.SmoothDamp(rg.velocity.x, moveSpeed * Time.fixedDeltaTime * 60, ref velocityX, accelerateTime), rg.velocity.y, rg.velocity.z);
                     transform.localScale = new Vector3(scale.x, scale.y, scale.z);
                 }
-                else if (Input.GetAxisRaw("Horizontal_Player1") < -inputOffset.x)
+                else if (Input.GetAxisRaw("Horizontal_Player1") < -inputOffset.x && isOnGround)
                 {
                     if (rg.velocity.x > moveSpeed * Time.fixedDeltaTime * -60)
                         rg.velocity = new Vector3(Mathf.SmoothDamp(rg.velocity.x, moveSpeed * Time.fixedDeltaTime * -60, ref velocityX, accelerateTime), rg.velocity.y, rg.velocity.z);
@@ -213,18 +212,19 @@ public class PlayerCtr : MonoBehaviour
                 }
                 else
                 {
-                    rg.velocity = new Vector3(Mathf.SmoothDamp(rg.velocity.x, 0, ref velocityX, decelerateTime), rg.velocity.y, rg.velocity.z);
+                    if (isOnGround)
+                        rg.velocity = new Vector3(Mathf.SmoothDamp(rg.velocity.x, 0, ref velocityX, decelerateTime), rg.velocity.y, rg.velocity.z);
                 }
             }
             else
             {
-                if (Input.GetAxisRaw("Horizontal_Player2") > inputOffset.x)
+                if (Input.GetAxisRaw("Horizontal_Player2") > inputOffset.x && !isJumping)
                 {
                     if (rg.velocity.x < moveSpeed * Time.fixedDeltaTime * 60)
                         rg.velocity = new Vector3(Mathf.SmoothDamp(rg.velocity.x, moveSpeed * Time.fixedDeltaTime * 60, ref velocityX, accelerateTime), rg.velocity.y, rg.velocity.z);
                     transform.localScale = new Vector3(scale.x, scale.y, scale.z);
                 }
-                else if (Input.GetAxisRaw("Horizontal_Player2") < -inputOffset.x)
+                else if (Input.GetAxisRaw("Horizontal_Player2") < -inputOffset.x && !isJumping)
                 {
                     if (rg.velocity.x > moveSpeed * Time.fixedDeltaTime * -60)
                         rg.velocity = new Vector3(Mathf.SmoothDamp(rg.velocity.x, moveSpeed * Time.fixedDeltaTime * -60, ref velocityX, accelerateTime), rg.velocity.y, rg.velocity.z);
@@ -233,7 +233,8 @@ public class PlayerCtr : MonoBehaviour
                 }
                 else
                 {
-                    rg.velocity = new Vector3(Mathf.SmoothDamp(rg.velocity.x, 0, ref velocityX, decelerateTime), rg.velocity.y, rg.velocity.z);
+                    if (isOnGround)
+                        rg.velocity = new Vector3(Mathf.SmoothDamp(rg.velocity.x, 0, ref velocityX, decelerateTime), rg.velocity.y, rg.velocity.z);
                 }
             }
 
@@ -288,7 +289,7 @@ public class PlayerCtr : MonoBehaviour
                     rg.velocity += -Vector3.up * (longJumpMultiplier - 1) * Time.fixedDeltaTime;
                 }
 
-                if (isOnGround && Input.GetAxis("Jump_Player2") == 0)
+                if (isOnGround && Input.GetAxis("Jump_Player2") ==0)
                 {
                     isJumping = false;
                 }
@@ -772,7 +773,7 @@ public class PlayerCtr : MonoBehaviour
 
     #endregion
 
-    private void OnDrawGizmos()
+    protected virtual void OnDrawGizmos()
     {
         Gizmos.color = Color.red;
         Gizmos.DrawWireCube(transform.position + pointOffset, size);

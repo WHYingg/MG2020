@@ -4,6 +4,8 @@ using UnityEngine;
 
 public class RobotCtr : PlayerCtr
 {
+    private Animator robotAnimation;
+
     #region 强力
     [Space]
     [Header("强力技能")]
@@ -32,24 +34,25 @@ public class RobotCtr : PlayerCtr
 
     void Start()
     {
+        robotAnimation = GetComponentInChildren<Animator>();
         strongOffset = pointOffsetStrong;
     }
 
-    void Update()
+    protected override void Update()
     {
+        base.Update();
+        robotAnimation.SetBool("isWalk", (rg.velocity.x > 0.3f || rg.velocity.x < -0.3f));
+        robotAnimation.SetBool("isJump", isJumping && !isOnGround);
         Skill_1();
         Skill_2();
     }
 
-    protected override void FixedUpdate()
-    {
-        base.FixedUpdate();
-    }
-    private void OnDrawGizmos()
-    {
-        Gizmos.color = Color.red;
-        Gizmos.DrawWireCube(transform.position + pointOffsetStrong, sizeStrong);
-    }
+    //protected override void OnDrawGizmos()
+    //{
+    //    base.OnDrawGizmos();
+    //    Gizmos.color = Color.red;
+    //    Gizmos.DrawWireCube(transform.position + pointOffsetStrong, sizeStrong);
+    //}
 
     #region 强力技能
     private Collider IsCanThrow()
@@ -115,19 +118,5 @@ public class RobotCtr : PlayerCtr
 
     #endregion
 
-    protected override void Skill_2()
-    {
-        if (Input.GetAxisRaw("Skill2_Player2") ==1)
-        {
-            if (Input.GetAxisRaw("Vertical_Player2") >0)
-            {
-                transform.localScale += new Vector3(0, 1 * Time.deltaTime, 0);
-            }
-            else if (Input.GetAxisRaw("Vertical_Player2") < 0)
-            {
-                transform.localScale -= new Vector3(0, 1 * Time.deltaTime, 0);
-            }
-        }
-    }
 
 }
