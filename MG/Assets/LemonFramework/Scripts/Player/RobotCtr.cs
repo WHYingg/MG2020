@@ -81,35 +81,36 @@ public class RobotCtr : PlayerCtr
         if (Input.GetAxisRaw("Horizontal_Player2") == 1 || Input.GetAxisRaw("Horizontal_Player2") == -1)
             pointOffsetStrong.x = strongOffset.x * Input.GetAxisRaw("Horizontal_Player2");
         strongSkillColdTimer -= Time.deltaTime;
-        if (Input.GetKeyDown(KeyCode.Keypad1) && strongSkillColdTimer <= 0)//按下使用强力技能的按钮 并且技能不在冷却
+        if (Input.GetAxisRaw("Skill1_Player2")>0 && strongSkillColdTimer <= 0)//按下使用强力技能的按钮 并且技能不在冷却
         {
             strongSkillColdTimer = strongSkillColdTime;
-            //能跳跃 属性增强
-            canJump = true;
-            moveSpeed += addMoveSpeed;
+            
             //TODO 攀爬能力提升
             StartCoroutine(StrongTime());//技能持续时间倒计时
         }
 
-        if (canStrong)
-        {
-            //能丢起小女孩
-            if (Input.GetKeyDown(KeyCode.Keypad5))
-            {
-                if (IsCanThrow() != null)
-                {
-                    Collider girl = IsCanThrow();
-                    Rigidbody girlRg = girl.GetComponent<Rigidbody>();
-                    girlRg.AddForce(Vector3.up * throwForce, ForceMode.Impulse);
-                }
-            }
-        }
+        //if (canStrong)
+        //{
+        //    //能丢起小女孩
+        //    if (Input.GetKeyDown(KeyCode.Keypad5))
+        //    {
+        //        if (IsCanThrow() != null)
+        //        {
+        //            Collider girl = IsCanThrow();
+        //            Rigidbody girlRg = girl.GetComponent<Rigidbody>();
+        //            girlRg.AddForce(Vector3.up * throwForce, ForceMode.Impulse);
+        //        }
+        //    }
+        //}
     }
 
     private IEnumerator StrongTime()
     {
         yield return new WaitForSeconds(strongBootTime);
         canStrong = true;
+        //能跳跃 属性增强
+        canJump = true;
+        moveSpeed += addMoveSpeed;
         yield return new WaitForSeconds(strongKeepTime);
         canStrong = false;
         canJump = false;

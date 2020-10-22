@@ -243,11 +243,11 @@ public class PlayerCtr : MonoBehaviour
     }
     private void Jump()
     {
+        isOnGround = IsOnGround();
         if (canJump)
         {
             if (playerType == PlayerType.Player1)
             {
-                isOnGround = IsOnGround();
                 //跳跃键按下并且没在跳
                 if (Input.GetAxis("Jump_Player1") == 1 && !isJumping)
                 {
@@ -265,18 +265,14 @@ public class PlayerCtr : MonoBehaviour
                     isJumping = false;
                 }
 
-                if (rg.velocity.y < 0)//加速下坠
-                {
-                    rg.velocity += Vector3.up * Physics.gravity.y * (fallMultiplier - 1) * Time.fixedDeltaTime;
-                }
-                else if (rg.velocity.y > 0 && Input.GetAxis("Jump_Player1") != 1)//松开减缓上升
+
+                if (rg.velocity.y > 0 && Input.GetAxis("Jump_Player1") != 1)//松开减缓上升
                 {
                     rg.velocity += Vector3.up * Physics.gravity.y * (lowJumpMultiplier - 1) * Time.fixedDeltaTime;
                 }
             }
             else
-            {
-                isOnGround = IsOnGround();
+            {         
                 //跳跃键按下并且没在跳
                 if (Input.GetAxis("Jump_Player2") == 1 && !isJumping)
                 {
@@ -289,16 +285,12 @@ public class PlayerCtr : MonoBehaviour
                     rg.velocity += -Vector3.up * (longJumpMultiplier - 1) * Time.fixedDeltaTime;
                 }
 
-                if (isOnGround && Input.GetAxis("Jump_Player2") ==0)
+                if (isOnGround && Input.GetAxis("Jump_Player2") == 0)
                 {
                     isJumping = false;
                 }
 
-                if (rg.velocity.y < 0)//加速下坠
-                {
-                    rg.velocity += Vector3.up * Physics.gravity.y * (fallMultiplier - 1) * Time.fixedDeltaTime;
-                }
-                else if (rg.velocity.y > 0 && Input.GetAxis("Jump_Player2") != 1)//松开减缓上升
+                if (rg.velocity.y > 0 && Input.GetAxis("Jump_Player2") != 1)//松开减缓上升
                 {
                     rg.velocity += Vector3.up * Physics.gravity.y * (lowJumpMultiplier - 1) * Time.fixedDeltaTime;
                 }
@@ -306,6 +298,10 @@ public class PlayerCtr : MonoBehaviour
 
         }
 
+        if (rg.velocity.y < 0)//加速下坠
+        {
+            rg.velocity += Vector3.up * Physics.gravity.y * (fallMultiplier - 1) * Time.fixedDeltaTime;
+        }
     }
     private bool IsOnGround()
     {
